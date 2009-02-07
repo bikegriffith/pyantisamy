@@ -3,31 +3,31 @@
     data module in this package.
 """
 
-DEFAULT_POLICY_URI = "data/antisamy.xml";
-DEFAULT_ONINVALID = "removeAttribute";
-DEFAULT_MAX_INPUT_SIZE = 100000;
-DEFAULT_MAX_STYLESHEET_IMPORTS = 1;
-OMIT_XML_DECLARATION = "omitXmlDeclaration";
-OMIT_DOCTYPE_DECLARATION = "omitDoctypeDeclaration";
-MAX_INPUT_SIZE = "maxInputSize";
-USE_XHTML = "useXHTML";
-FORMAT_OUTPUT = "formatOutput";
-EMBED_STYLESHEETS = "embedStyleSheets";
-CONNECTION_TIMEOUT = "connectionTimeout";
-REGEXP_BEGIN = '^';
-REGEXP_END = '$';
+DEFAULT_POLICY_URI = "data/antisamy.xml"
+DEFAULT_ONINVALID = "removeAttribute"
+DEFAULT_MAX_INPUT_SIZE = 100000
+DEFAULT_MAX_STYLESHEET_IMPORTS = 1
+OMIT_XML_DECLARATION = "omitXmlDeclaration"
+OMIT_DOCTYPE_DECLARATION = "omitDoctypeDeclaration"
+MAX_INPUT_SIZE = "maxInputSize"
+USE_XHTML = "useXHTML"
+FORMAT_OUTPUT = "formatOutput"
+EMBED_STYLESHEETS = "embedStyleSheets"
+CONNECTION_TIMEOUT = "connectionTimeout"
+REGEXP_BEGIN = '^'
+REGEXP_END = '$'
 
 
 class Policy:
     """ Policy and rules engine for XSS scanning. """
 	
-	common_regexps = {}; 
-	common_attributes = {};
-	tag_rules = {};
-	css_rules = {};
-	directives = {};
-	global_attributes = {};
-	tag_names = [];
+    common_regexps = {}
+    common_attributes = {}
+    tag_rules = {}
+    css_rules = {}
+    directives = {}
+    global_attributes = {}
+    tag_names = []
 
     def __init__(self):
         pass
@@ -66,4 +66,4 @@ class Policy:
     
     def parse_css_rules(self):
         """ Parse the <css-rules> section of the config file. """
-		pass
+        pass
