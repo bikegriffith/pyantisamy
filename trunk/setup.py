@@ -11,7 +11,7 @@ setup(
     
     # package up all .py's under here, as well as all .xml's and .cfg's
     packages=find_packages(),
-    package_data={'': ['*.xml', '*.cfg']},
+    package_data={'': ['*.xml', '*.xsd', '*.cfg']},
     
     # make sure user has lxml and cssutils
     install_requires=['lxml>=2.0', 'cssutils>=0.9'],
