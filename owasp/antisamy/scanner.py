@@ -1,7 +1,7 @@
 """ Main entry point for AntiSamy XSS scanning. """
 
 from owasp.antisamy.scanexception import ScanException
-from owasp.antisamy.scanresult import ScanResult
+from owasp.antisamy.cleanresults import CleanResults
 
 DEFAULT_ENCODING = "utf-8"
 
