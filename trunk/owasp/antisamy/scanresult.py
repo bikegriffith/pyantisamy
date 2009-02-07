@@ -1,4 +1,4 @@
-
+""" This file holds the model for the results of the scan. """
 
 class ScanResult:
 
