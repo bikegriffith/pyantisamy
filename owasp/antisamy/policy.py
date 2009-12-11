@@ -3,6 +3,12 @@
     data module in this package.
 """
 
+__date__    = "$Date: $"
+__version__ = "$Revision: $"
+__author__  = "$Author: $"
+
+import lxml
+
 DEFAULT_POLICY_URI = "data/antisamy.xml"
 DEFAULT_ONINVALID = "removeAttribute"
 DEFAULT_MAX_INPUT_SIZE = 100000

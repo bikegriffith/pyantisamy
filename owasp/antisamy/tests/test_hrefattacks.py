@@ -1,3 +1,7 @@
+__date__    = "$Date: $"
+__version__ = "$Revision: $"
+__author__  = "$Author: $"
+
 from nose.tools import assert_true, with_setup
 from owasp.antisamy.policy import Policy
 from owasp.antisamy.scanner import scan
