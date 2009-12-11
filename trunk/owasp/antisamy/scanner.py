@@ -1,6 +1,10 @@
 """ Main entry point for AntiSamy XSS scanning. """
 
-from owasp.antisamy.scanexception import ScanException
+__date__    = "$Date: $"
+__version__ = "$Revision: $"
+__author__  = "$Author: $"
+
+from owasp.antisamy import ScanException
 from owasp.antisamy.cleanresults import CleanResults
 
 DEFAULT_ENCODING = "utf-8"
