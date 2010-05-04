@@ -6,7 +6,7 @@ __author__  = "$Author: $"
 
 class CleanResults:
 
-    clean_html = None
-    
+    clean_html = ""
+
     def __init__(self):
         pass

@@ -21,5 +21,5 @@ def scan(input, policy, input_encoding=DEFAULT_ENCODING,
         @raises ScanException When there is a problem encountered while scanning the HTML.
         @raises PolicyException When there is a problem reading the policy file.
     """
-    pass
+    return CleanResults()
 
