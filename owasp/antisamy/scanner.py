@@ -1,9 +1,5 @@
 """ Main entry point for AntiSamy XSS scanning. """
 
-__date__    = "$Date: $"
-__version__ = "$Revision: $"
-__author__  = "$Author: $"
-
 from owasp.antisamy import ScanException
 from owasp.antisamy.cleanresults import CleanResults
 
