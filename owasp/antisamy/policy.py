@@ -56,12 +56,15 @@ class PolicyParser(object):
 
     def __init__(self, policy_file):
         self.xml = objectify.parse(policy_file).getroot()
+        self._regexps = None
+        self._attributes = None
 
     def parse(self):
         """ Parse all of the top-level elements in the specified config file.
             @return Policy
         """
-        return Policy(regexps=self.parse_regexps(),
+        self._regexps = self.parse_regexps()
+        return Policy(regexps=self._regexps,
                       attributes=self.parse_attributes(),
                       tag_rules=self.parse_tag_rules(),
                       css_rules=self.parse_css_rules(),
@@ -74,13 +77,15 @@ class PolicyParser(object):
         parsed = {}
         for regexp in regexps:
             name = regexp.get("name")
-            value = regexp.get("value")
-            try:
-                parsed[name] = re.compile(value)
-            except Exception, ex:
-                raise ValueError("Invalid regular expression ({0}): {1}"
-                        .format(ex, value))
+            parsed[name] = self._to_regexp(regexp.get("value"))
         return parsed
+
+    def _to_regexp(self, value):
+        try:
+            return re.compile(value)
+        except Exception, ex:
+            raise ValueError("Invalid regular expression ({0}): {1}"
+                    .format(ex, value))
 
     def parse_directives(self):
         """ Parse the <directives> section of the config file. """
@@ -103,10 +108,13 @@ class PolicyParser(object):
             regexps = getattr(attribute, "regexp-list", None)
             literals = getattr(attribute, "literal-list", None)
             if regexps is not None:
-                # FIXME: some regexps aren't in the common-regexps and are
-                # defined here with a value rather than with a `name` reference
-                # to the original
-                regexps = [r.get("name") for r in regexps.findall("regexp")]
+                compiled_regexps = []
+                for r in regexps.findall("regexp"):
+                    if r.get("name") is not None:
+                        compiled_regexps.append(self._regexps[r.get("name")])
+                    else:
+                        compiled_regexps.append(self._to_regexp(r.get("value")))
+                regexps = compiled_regexps
             if literals is not None:
                 literals = [l.get("value") for l in literals.findall("literal")]
             parsed[name] = Attribute(name, description=description,

@@ -1,4 +1,4 @@
-import os
+import os, re
 from nose import tools as NT
 from owasp.antisamy import policy
 
@@ -49,7 +49,7 @@ class TestPolicyParserForCoreAntisamyXml(object):
 
     def test_parsed_attributes_should_have_regular_expression_validators(self):
         NT.assert_equals(self.policy.attributes["class"].valid_regexps,
-                ["htmlClass"])
+                [self.policy.regexps["htmlClass"]])
 
     def test_parsed_attributes_should_have_a_list_of_valid_literals(self):
         NT.assert_equals(self.policy.attributes["media"].valid_literals,
@@ -57,12 +57,25 @@ class TestPolicyParserForCoreAntisamyXml(object):
                         "braille", "aural", "all"])
 
     def test_parsed_attributes_should_have_both_regexp_and_literal_validators(self):
+        regexps = self.policy.regexps
         attribute = self.policy.attributes["href"]
         NT.assert_equals(attribute.valid_regexps,
-                ["onsiteURL", "offsiteURL"])
+                [regexps["onsiteURL"], regexps["offsiteURL"]])
         NT.assert_equals(attribute.valid_literals,
                 ["javascript:history.go(0)",
                  "javascript:history.go(-1)",
                  "javascript:void(0)",
                  "javascript:location.reload()"])
+
+    def test_parsed_attributes_should_link_to_existing_regular_expression(self):
+        attribute = self.policy.attributes["alt"]
+        NT.assert_equals(attribute.valid_regexps,
+                [self.policy.regexps["paragraph"]])
+
+    def test_parsed_attributes_should_make_new_regexp(self):
+        # if not already parsed by common-regexps
+        print self.policy.attributes.keys()
+        attribute = self.policy.attributes["name"]
+        NT.assert_equals(attribute.valid_regexps,
+                [re.compile("[a-zA-Z0-9-_\$]+")])
 
