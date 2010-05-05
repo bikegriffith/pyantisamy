@@ -75,8 +75,13 @@ class TestPolicyParserForCoreAntisamyXml(object):
 
     def test_parsed_attributes_should_make_new_regexp(self):
         # if not already parsed by common-regexps
-        print self.policy.attributes.keys()
         attribute = self.policy.attributes["name"]
         NT.assert_equals(attribute.valid_regexps,
                 [re.compile("[a-zA-Z0-9-_\$]+")])
+
+
+    def test_parses_all_tag_rules(self):
+        tag_rules = self.policy.tag_rules
+        assert tag_rules is not None
+        NT.assert_equals(len(tag_rules), 67)
 

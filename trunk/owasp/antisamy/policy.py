@@ -42,7 +42,7 @@ class Policy(object):
 
 
 class Attribute(object):
-    """ an html attribute """
+    """ an html attribute and its rules """
 
     def __init__(self, name, description=None, valid_regexps=None,
             valid_literals=None):
@@ -50,6 +50,15 @@ class Attribute(object):
         self.description = description
         self.valid_regexps = valid_regexps
         self.valid_literals = valid_literals
+
+
+class Tag(object):
+    """ an html element and its rules """
+
+    def __init__(self, name, action, attributes=None):
+        self.name = name
+        self.action = action
+        self.attributes = attributes
 
 
 class PolicyParser(object):
@@ -104,23 +113,26 @@ class PolicyParser(object):
                 "common-attributes").findall("attribute")
         parsed = {}
         for attribute in attributes:
-            name = attribute.get("name")
-            description = attribute.get("description")
-            regexps = getattr(attribute, "regexp-list", None)
-            literals = getattr(attribute, "literal-list", None)
-            if regexps is not None:
-                compiled_regexps = []
-                for r in regexps.findall("regexp"):
-                    if r.get("name") is not None:
-                        compiled_regexps.append(self._regexps[r.get("name")])
-                    else:
-                        compiled_regexps.append(self._to_regexp(r.get("value")))
-                regexps = compiled_regexps
-            if literals is not None:
-                literals = [l.get("value") for l in literals.findall("literal")]
-            parsed[name] = Attribute(name, description=description,
-                    valid_regexps=regexps, valid_literals=literals)
+            parsed[attribute.get("name")] = self._get_attribute(attribute)
         return parsed
+
+    def _get_attribute(self, attribute):
+        name = attribute.get("name")
+        description = attribute.get("description")
+        regexps = getattr(attribute, "regexp-list", None)
+        literals = getattr(attribute, "literal-list", None)
+        if regexps is not None:
+            compiled_regexps = []
+            for r in regexps.findall("regexp"):
+                if r.get("name") is not None:
+                    compiled_regexps.append(self._regexps[r.get("name")])
+                else:
+                    compiled_regexps.append(self._to_regexp(r.get("value")))
+            regexps = compiled_regexps
+        if literals is not None:
+            literals = [l.get("value") for l in literals.findall("literal")]
+        return Attribute(name, description=description,
+                valid_regexps=regexps, valid_literals=literals)
 
     def parse_global_attributes(self):
         """ Parse the <global-tag-attributes> (id, style, etc.) section of the
@@ -134,7 +146,19 @@ class PolicyParser(object):
     def parse_tag_rules(self):
         """ Parse the <tag-rules> (restrictions) section of the config file.
         """
-        return {}
+        tags = getattr(self.xml, "tag-rules").findall("tag")
+        parsed = {}
+        for tag in tags:
+            name = tag.get("name")
+            action = tag.get("action")
+            attributes = []
+            for attribute in tag.findall("attribute"):
+                if attribute.get("name") in self._attributes:
+                    attributes.append(self._attributes[attribute.get("name")])
+                else:
+                    attributes.append(self._get_attribute(attribute))
+            parsed[name] = Tag(name, action, attributes)
+        return parsed
 
     def parse_css_rules(self):
         """ Parse the <css-rules> section of the config file. """
