@@ -41,6 +41,17 @@ class Policy(object):
         self.global_attributes = global_attributes
 
 
+class Attribute(object):
+    """ an html attribute """
+
+    def __init__(self, name, description=None, valid_regexps=None,
+            valid_literals=None):
+        self.name = name
+        self.description = description
+        self.valid_regexps = valid_regexps
+        self.valid_literals = valid_literals
+
+
 class PolicyParser(object):
 
     def __init__(self, policy_file):
@@ -83,9 +94,24 @@ class PolicyParser(object):
 
     def parse_attributes(self):
         """ Parse the <common-attributes> section of the config file. """
-        # WEE BIT TRICKIER.. refer to java implementation.. stuff going on with
-        # `invalid`, etc attributes
-        return {}
+        attributes = getattr(self.xml,
+                "common-attributes").findall("attribute")
+        parsed = {}
+        for attribute in attributes:
+            name = attribute.get("name")
+            description = attribute.get("description")
+            regexps = getattr(attribute, "regexp-list", None)
+            literals = getattr(attribute, "literal-list", None)
+            if regexps is not None:
+                # FIXME: some regexps aren't in the common-regexps and are
+                # defined here with a value rather than with a `name` reference
+                # to the original
+                regexps = [r.get("name") for r in regexps.findall("regexp")]
+            if literals is not None:
+                literals = [l.get("value") for l in literals.findall("literal")]
+            parsed[name] = Attribute(name, description=description,
+                    valid_regexps=regexps, valid_literals=literals)
+        return parsed
 
     def parse_global_attributes(self):
         """ Parse the <global-tag-attributes> (id, style, etc.) section of the
