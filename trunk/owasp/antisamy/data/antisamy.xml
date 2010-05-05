@@ -139,7 +139,8 @@ http://www.w3.org/TR/html401/struct/global.html
 		 	<regexp-list>
 		 		<regexp value="[a-zA-Z]{2,20}"/>
 		 	</regexp-list>
-		 </attribute>
+        </attribute>
+
 		 <attribute name="title" description="The 'title' attribute provides text that shows up in a 'tooltip' when a user hovers their mouse over the element">
 		 	<regexp-list>
 		 		<regexp name="htmlTitle"/>
@@ -278,7 +279,7 @@ http://www.w3.org/TR/html401/struct/global.html
 
 		 <attribute name="char">
 			<regexp-list>
-				<regexp value=".*{0,1}"/>
+				<regexp value=".{0,1}"/>
 			</regexp-list>
 		 </attribute>
 
