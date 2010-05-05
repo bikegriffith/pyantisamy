@@ -3,11 +3,13 @@
     data module in this package.
 """
 
-__date__    = "$Date: $"
-__version__ = "$Revision: $"
-__author__  = "$Author: $"
+import re
+from lxml import objectify
 
-import lxml
+def from_file(filename):
+    """ generate a policy object from the given file """
+    return PolicyParser(filename).parse()
+
 
 DEFAULT_POLICY_URI = "data/antisamy.xml"
 DEFAULT_ONINVALID = "removeAttribute"
@@ -24,52 +26,68 @@ REGEXP_BEGIN = '^'
 REGEXP_END = '$'
 
 
-class Policy:
+class Policy(object):
     """ Policy and rules engine for XSS scanning. """
-	
-    common_regexps = {}
-    common_attributes = {}
-    tag_rules = {}
-    css_rules = {}
-    directives = {}
-    global_attributes = {}
-    tag_names = []
 
-    def __init__(self):
-        pass
-    
+    tag_names = ()
+
+    def __init__(self, regexps=None, attributes=None, tag_rules=None,
+            css_rules=None, directives=None, global_attributes=None):
+        self.regexps = regexps
+        self.attributes = attributes
+        self.tag_rules = tag_rules
+        self.css_rules = css_rules
+        self.directives = directives
+        self.global_attributes = global_attributes
+
+
+class PolicyParser(object):
+
+    def __init__(self, policy_file):
+        self.xml = objectify.parse(policy_file).getroot()
+
     def parse(self):
         """ Parse all of the top-level elements in the specified config file. """
-        top_level_parsers = [self.parse_common_regexps, self.parse_directives,
-                self.parse_common_attributes, self.parse_global_tag_attributes,
-                self.parse_tag_rules, self.parse_css_rules]
-        for parser in top_level_parsers:
-            parser()
-    
-    def parse_common_regexps(self):
+        #top_level_parsers = [self.parse_common_regexps, self.parse_directives,
+        #        self.parse_common_attributes, self.parse_global_tag_attributes,
+        #        self.parse_tag_rules, self.parse_css_rules]
+        #for parser in top_level_parsers:
+        #    parser()
+
+        return Policy(regexps=self.parse_regexps())
+
+    def parse_regexps(self):
         """ Parse the <common-regexps> section of the config file. """
-        # List of <regexp name="" value="" /> need to map to dict of compiled regexps
-        pass
-    
+        regexps = getattr(self.xml, "common-regexps").findall("regexp")
+        parsed = {}
+        for regexp in regexps:
+            name = regexp.get("name")
+            value = regexp.get("value")
+            try:
+                parsed[name] = re.compile(value)
+            except:
+                print "Error parsing regular expression: {0}".format(value)
+        return parsed
+
     def parse_directives(self):
         """ Parse the <directives> section of the config file. """
         # List of <directive name="" value="" /> need to map to dict
         pass
-    
+
     def parse_common_attributes(self):
         """ Parse the <common-attributes> section of the config file. """
         # WEE BIT TRICKIER.. refer to java implementation.. stuff going on with invalid, etc attributes
         pass
-    
+
     def parse_global_tag_attributes(self):
         """ Parse the <global-tag-attributes> (id, style, etc.) section of the config file. """
         # requires that parse_common_attributes has already been called.  loop through the list of <attribute name="" /> nodes and pull the actual attribute from the common_attributes list and stick it here
         pass
-    
+
     def parse_tag_rules(self):
         """ Parse the <tag-rules> (restrictions) section of the config file. """
         pass
-    
+
     def parse_css_rules(self):
         """ Parse the <css-rules> section of the config file. """
         pass
