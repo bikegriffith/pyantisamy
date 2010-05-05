@@ -90,10 +90,11 @@ class PolicyParser(object):
         """ Parse the <global-tag-attributes> (id, style, etc.) section of the
             config file.
         """
-        # requires that parse_common_attributes has already been called.  loop
-        # through the list of <attribute name="" /> nodes and pull the actual
-        # attribute from the common_attributes list and stick it here
-        return {}
+        # TODO: pull the actual attribute from the common_attributes list and
+        # stick it here here
+        attributes = getattr(self.xml,
+                "global-tag-attributes").findall("attribute")
+        return [attribute.get("name") for attribute in attributes]
 
     def parse_tag_rules(self):
         """ Parse the <tag-rules> (restrictions) section of the config file.

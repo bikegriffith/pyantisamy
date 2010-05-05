@@ -31,7 +31,15 @@ class TestPolicyParserForCoreAntisamyXml(object):
     def test_parses_directives(self):
         assert self.policy.directives
         NT.assert_equals(len(self.policy.directives), 8)
+
+    def test_guesses_correct_type_on_directives(self):
         NT.assert_equals(self.policy.directives["omitXmlDeclaration"], True)
         NT.assert_equals(self.policy.directives["maxInputSize"], 200000)
         NT.assert_equals(self.policy.directives["embedStyleSheets"], False)
+
+    def test_parses_global_tag_attribute_names(self):
+        assert self.policy.global_attributes
+        NT.assert_equals(len(self.policy.global_attributes), 5)
+        NT.assert_equals(self.policy.global_attributes,
+                ["id", "style", "title", "class", "lang"])
 
