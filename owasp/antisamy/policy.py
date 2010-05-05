@@ -66,8 +66,9 @@ class PolicyParser(object):
             value = regexp.get("value")
             try:
                 parsed[name] = re.compile(value)
-            except:
-                print "Error parsing regular expression: {0}".format(value)
+            except Exception, ex:
+                raise ValueError("Invalid regular expression ({0}): {1}"
+                        .format(ex, value))
         return parsed
 
     def parse_directives(self):
