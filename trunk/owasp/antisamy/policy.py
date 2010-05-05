@@ -47,14 +47,15 @@ class PolicyParser(object):
         self.xml = objectify.parse(policy_file).getroot()
 
     def parse(self):
-        """ Parse all of the top-level elements in the specified config file. """
-        #top_level_parsers = [self.parse_common_regexps, self.parse_directives,
-        #        self.parse_common_attributes, self.parse_global_tag_attributes,
-        #        self.parse_tag_rules, self.parse_css_rules]
-        #for parser in top_level_parsers:
-        #    parser()
-
-        return Policy(regexps=self.parse_regexps())
+        """ Parse all of the top-level elements in the specified config file.
+            @return Policy
+        """
+        return Policy(regexps=self.parse_regexps(),
+                      attributes=self.parse_attributes(),
+                      tag_rules=self.parse_tag_rules(),
+                      css_rules=self.parse_css_rules(),
+                      directives=self.parse_directives(),
+                      global_attributes=self.parse_global_attributes())
 
     def parse_regexps(self):
         """ Parse the <common-regexps> section of the config file. """
@@ -71,23 +72,44 @@ class PolicyParser(object):
 
     def parse_directives(self):
         """ Parse the <directives> section of the config file. """
-        # List of <directive name="" value="" /> need to map to dict
-        pass
+        directives = getattr(self.xml, "directives").findall("directive")
+        parsed = {}
+        for directive in directives:
+            name = directive.get("name")
+            value = directive.get("value")
+            parsed[name] = self._guess_type(value)
+        return parsed
 
-    def parse_common_attributes(self):
+    def parse_attributes(self):
         """ Parse the <common-attributes> section of the config file. """
-        # WEE BIT TRICKIER.. refer to java implementation.. stuff going on with invalid, etc attributes
-        pass
+        # WEE BIT TRICKIER.. refer to java implementation.. stuff going on with
+        # `invalid`, etc attributes
+        return {}
 
-    def parse_global_tag_attributes(self):
-        """ Parse the <global-tag-attributes> (id, style, etc.) section of the config file. """
-        # requires that parse_common_attributes has already been called.  loop through the list of <attribute name="" /> nodes and pull the actual attribute from the common_attributes list and stick it here
-        pass
+    def parse_global_attributes(self):
+        """ Parse the <global-tag-attributes> (id, style, etc.) section of the
+            config file.
+        """
+        # requires that parse_common_attributes has already been called.  loop
+        # through the list of <attribute name="" /> nodes and pull the actual
+        # attribute from the common_attributes list and stick it here
+        return {}
 
     def parse_tag_rules(self):
-        """ Parse the <tag-rules> (restrictions) section of the config file. """
-        pass
+        """ Parse the <tag-rules> (restrictions) section of the config file.
+        """
+        return {}
 
     def parse_css_rules(self):
         """ Parse the <css-rules> section of the config file. """
-        pass
+        return {}
+
+    def _guess_type(self, value):
+        if value.isdigit():
+            return int(value)
+        if value == "true":
+            return True
+        if value == "false":
+            return False
+        return value
+
