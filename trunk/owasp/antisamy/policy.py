@@ -64,8 +64,9 @@ class PolicyParser(object):
             @return Policy
         """
         self._regexps = self.parse_regexps()
+        self._attributes = self.parse_attributes()
         return Policy(regexps=self._regexps,
-                      attributes=self.parse_attributes(),
+                      attributes=self._attributes,
                       tag_rules=self.parse_tag_rules(),
                       css_rules=self.parse_css_rules(),
                       directives=self.parse_directives(),
@@ -125,11 +126,10 @@ class PolicyParser(object):
         """ Parse the <global-tag-attributes> (id, style, etc.) section of the
             config file.
         """
-        # TODO: pull the actual attribute from the common_attributes list and
-        # stick it here here
         attributes = getattr(self.xml,
                 "global-tag-attributes").findall("attribute")
-        return [attribute.get("name") for attribute in attributes]
+        return [self._attributes[attribute.get("name")]
+                    for attribute in attributes]
 
     def parse_tag_rules(self):
         """ Parse the <tag-rules> (restrictions) section of the config file.

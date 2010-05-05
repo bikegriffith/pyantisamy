@@ -40,7 +40,8 @@ class TestPolicyParserForCoreAntisamyXml(object):
     def test_parses_global_tag_attribute_names(self):
         assert self.policy.global_attributes
         NT.assert_equals(len(self.policy.global_attributes), 5)
-        NT.assert_equals(self.policy.global_attributes,
+        attribute_names = [a.name for a in self.policy.global_attributes]
+        NT.assert_equals(attribute_names,
                 ["id", "style", "title", "class", "lang"])
 
     def test_parses_all_attributes(self):
